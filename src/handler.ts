@@ -19,7 +19,7 @@ export interface Config {
   skipKeywords: string[]
   useReviewGroups: boolean
   useAssigneeGroups: boolean
-  reviewGroups: { [key: string]: string[] }
+  reviewGroups: string[]
   assigneeGroups: { [key: string]: string[] }
   runOnDraft?: boolean
 }
@@ -101,8 +101,8 @@ export async function handlePullRequest(
     try {
       const reviewers = utils.chooseReviewers(owner, config)
 
-      if (reviewers.length > 0) {
-        await pr.addReviewers(reviewers)
+      if (reviewers.length > 0 || reviewGroups.length > 0) {
+        await pr.addReviewers(reviewers, reviewGroups)
         core.info(`Added reviewers to PR #${number}: ${reviewers.join(', ')}`)
       }
     } catch (error) {

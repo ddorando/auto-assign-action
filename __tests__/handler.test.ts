@@ -578,74 +578,18 @@ describe('handlePullRequest', () => {
       addAssignees: false,
       addReviewers: true,
       useReviewGroups: true,
-      numberOfReviewers: 1,
-      reviewGroups: {
-        groupA: ['group1-user1', 'group1-user2', 'group1-user3'],
-        groupB: ['group2-user1', 'group2-user2', 'group2-user3'],
-      },
+      numberOfReviewers: 0,
+      reviewGroups: ['group1'],
     } as any
 
     // WHEN
     await handler.handlePullRequest(client, context, config)
 
     // THEN
-    expect(requestReviewersSpy.mock.calls[0][0]?.reviewers).toHaveLength(2)
-    expect(requestReviewersSpy.mock.calls[0][0]?.reviewers![0]).toMatch(
+    expect(requestReviewersSpy.mock.calls[0][0]?.reviewers).toHaveLength(0)
+    expect(requestReviewersSpy.mock.calls[0][0]?.team_reviewers).toHaveLength(1)
+    expect(requestReviewersSpy.mock.calls[0][0]?.team_reviewers![0]).toMatch(
       /group1/
-    )
-    expect(requestReviewersSpy.mock.calls[0][0]?.reviewers![1]).toMatch(
-      /group2/
-    )
-    expect(addAssigneesSpy).not.toBeCalled()
-  })
-
-  test('adds all reviewers from a group that has less members than the number of reviews requested', async () => {
-    // MOCKS
-    ;(github.getOctokit as jest.Mock).mockImplementation(() => ({
-      rest: {
-        pulls: {
-          requestReviewers: async () => {},
-        },
-        issues: {
-          addAssignees: async () => {},
-        },
-      },
-    }))
-
-    const client = github.getOctokit('token')
-
-    const requestReviewersSpy = jest.spyOn(
-      client.rest.pulls,
-      'requestReviewers'
-    )
-
-    const addAssigneesSpy = jest.spyOn(client.rest.issues, 'addAssignees')
-
-    // GIVEN
-    const config = {
-      addAssignees: false,
-      addReviewers: true,
-      useReviewGroups: true,
-      numberOfReviewers: 2,
-      reviewGroups: {
-        groupA: ['group1-user1', 'group1-user2', 'group1-user3'],
-        groupB: ['group2-user1'],
-      },
-    } as any
-
-    // WHEN
-    await handler.handlePullRequest(client, context, config)
-
-    // THEN
-    expect(requestReviewersSpy.mock.calls[0][0]?.reviewers).toHaveLength(3)
-    expect(requestReviewersSpy.mock.calls[0][0]?.reviewers![0]).toMatch(
-      /group1/
-    )
-    expect(requestReviewersSpy.mock.calls[0][0]?.reviewers![1]).toMatch(
-      /group1/
-    )
-    expect(requestReviewersSpy.mock.calls[0][0]?.reviewers![2]).toMatch(
-      /group2-user1/
     )
     expect(addAssigneesSpy).not.toBeCalled()
   })
@@ -875,13 +819,9 @@ describe('handlePullRequest', () => {
       addReviewers: true,
       useReviewGroups: true,
       numberOfAssignees: 1,
-      numberOfReviewers: 2,
+      numberOfReviewers: 0,
       assignees: ['assignee1', 'assignee2', 'assignee3'],
-      reviewGroups: {
-        groupA: ['group1-reviewer1', 'group1-reviewer2', 'group1-reviewer3'],
-        groupB: ['group2-reviewer1'],
-        groupC: ['group3-reviewer1', 'group3-reviewer2', 'group3-reviewer3'],
-      },
+      reviewGroups: ['group1', 'group2', 'group3'],
     } as any
 
     // WHEN
@@ -891,15 +831,16 @@ describe('handlePullRequest', () => {
     expect(addAssigneesSpy.mock.calls[0][0]?.assignees).toHaveLength(1)
     expect(addAssigneesSpy.mock.calls[0][0]?.assignees![0]).toMatch(/assignee/)
 
-    expect(requestReviewersSpy.mock.calls[0][0]?.reviewers).toHaveLength(5)
-    expect(requestReviewersSpy.mock.calls[0][0]?.reviewers![0]).toMatch(
-      /group1-reviewer/
+    expect(requestReviewersSpy.mock.calls[0][0]?.reviewers).toHaveLength(0)
+    expect(requestReviewersSpy.mock.calls[0][0]?.team_reviewers).toHaveLength(3)
+    expect(requestReviewersSpy.mock.calls[0][0]?.team_reviewers![0]).toMatch(
+      /group1/
     )
-    expect(requestReviewersSpy.mock.calls[0][0]?.reviewers![2]).toMatch(
-      /group2-reviewer/
+    expect(requestReviewersSpy.mock.calls[0][0]?.team_reviewers![1]).toMatch(
+      /group2/
     )
-    expect(requestReviewersSpy.mock.calls[0][0]?.reviewers![3]).toMatch(
-      /group3-reviewer/
+    expect(requestReviewersSpy.mock.calls[0][0]?.team_reviewers![2]).toMatch(
+      /group3/
     )
   })
 

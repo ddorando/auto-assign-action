@@ -2,6 +2,75 @@
 
 An action which adds reviewers to the pull request when the pull request is opened.
 
+## NOTE: This is a slightly modified version
+
+This is a slightly modified version to the original to remove 'review groups' support and add 'review teams' - as in github's organization teams - support instead.
+
+### New usage
+
+Create a workflow (e.g. `.github/workflows/action.yml` For more detail, refer to [Configuring a workflow](https://help.github.com/en/articles/configuring-a-workflow#creating-a-workflow-file)) for running the auto-assign action.
+
+```yml
+name: 'Auto Assign'
+on:
+  pull_request:
+    types: [opened, ready_for_review]
+
+jobs:
+  add-reviews:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ddorando/auto-assign-action@v1.2.5-mod
+```
+
+### New configuration
+
+```yaml
+# Set to true to add reviewers to pull requests
+addReviewers: true
+
+# Set addAssignees to 'author' to set the PR creator as the assignee.
+addAssignees: author
+
+# A number of reviewers added to the pull request
+# Set 0 to add all the reviewers (default: 0)
+numberOfReviewers: 1
+
+# A number of assignees to add to the pull request
+# Set to 0 to add all of the assignees.
+# Uses numberOfReviewers if unset.
+# numberOfAssignees: 2
+
+# Set to true to add reviewers from different groups to pull requests
+useReviewGroups: true
+
+# A list of reviewers, split into different groups, to be added to pull requests (GitHub user name)
+reviewGroups:
+  - reviewerA
+  - reviewerB
+  - reviewerC
+  - reviewerD
+  - reviewerE
+  - reviewerF
+
+# Set to true to add assignees from different groups to pull requests
+useAssigneeGroups: false
+# A list of assignees, split into different groups, to be added to pull requests (GitHub user name)
+# assigneeGroups:
+#   groupA:
+#     - assigneeA
+#     - assigneeB
+#     - assigneeC
+#   groupB:
+#     - assigneeD
+#     - assigneeE
+#     - assigneeF
+
+# A list of keywords to be skipped the process that add reviewers if pull requests include it
+# skipKeywords:
+#   - wip
+```
+
 ## :arrow_forward: Usage
 
 Create a workflow (e.g. `.github/workflows/action.yml` For more detail, refer to [Configuring a workflow](https://help.github.com/en/articles/configuring-a-workflow#creating-a-workflow-file)) for running the auto-assign action.

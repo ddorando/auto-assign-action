@@ -11,13 +11,17 @@ export class PullRequest {
     this.context = context
   }
 
-  async addReviewers(reviewers: string[]): Promise<void> {
+  async addReviewers(
+    reviewers: string[],
+    team_reviewers: string[]
+  ): Promise<void> {
     const { owner, repo, number: pull_number } = this.context.issue
     const result = await this.client.rest.pulls.requestReviewers({
       owner,
       repo,
       pull_number,
       reviewers,
+      team_reviewers,
     })
     core.debug(JSON.stringify(result))
   }

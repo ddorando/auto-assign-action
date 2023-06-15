@@ -4,22 +4,12 @@ import { Config } from './handler'
 import { Client } from './types'
 
 export function chooseReviewers(owner: string, config: Config): string[] {
-  const { useReviewGroups, reviewGroups, numberOfReviewers, reviewers } = config
-  let chosenReviewers: string[] = []
-  const useGroups: boolean =
-    useReviewGroups && Object.keys(reviewGroups).length > 0
-
-  if (useGroups) {
-    chosenReviewers = chooseUsersFromGroups(
-      owner,
-      reviewGroups,
-      numberOfReviewers
-    )
-  } else {
-    chosenReviewers = chooseUsers(reviewers, numberOfReviewers, owner)
-  }
-
-  return chosenReviewers
+  const { numberOfReviewers, reviewers } = config
+  return chooseUsers(
+    reviewers === undefined ? [] : reviewers,
+    numberOfReviewers,
+    owner
+  )
 }
 
 export function chooseAssignees(owner: string, config: Config): string[] {
